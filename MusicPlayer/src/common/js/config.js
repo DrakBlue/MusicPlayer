@@ -12,3 +12,15 @@ export const options={
 }
 
 export const OK = 0
+
+// callback: recom5876403542209383
+// g_tk: 5381
+// jsonpCallback: recom5876403542209383
+// loginUin: 0
+// hostUin: 0
+// format: jsonp
+// inCharset: utf8
+// outCharset: utf-8
+// notice: 0
+// platform: yqq
+// needNewCode: 0

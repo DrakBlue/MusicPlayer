@@ -2,6 +2,7 @@
     <div class="nav">
       <router-link tag="div" to="/recommend" class="nav-item">推荐</router-link>
       <router-link tag="div" to="/singer" class="nav-item">歌手</router-link>
+      <router-link tag="div" to="/jay" class="nav-item">Jay</router-link>
       <router-link tag="div" to="/rank" class="nav-item">排行</router-link>
       <router-link tag="div" to="/search" class="nav-item">搜索</router-link>
     </div>

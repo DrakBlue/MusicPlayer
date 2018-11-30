@@ -2,7 +2,9 @@
   <div id="app" ref='wrapper'>
      <home-head></home-head>
      <nav-router></nav-router>
-    <router-view/>
+     <keep-alive>
+      <router-view/>
+    </keep-alive>
   </div>
 </template>
 
