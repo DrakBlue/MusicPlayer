@@ -1,23 +1,27 @@
 <template>
-  <div id="app">
-    <img src="./assets/logo.png">
+  <div id="app" ref='wrapper'>
+     <home-head></home-head>
+     <nav-router></nav-router>
     <router-view/>
   </div>
 </template>
 
 <script>
+import HomeHead from './components/home/home-head'
+import NavRouter from './components/nav/nav-router'
+
 export default {
-  name: 'App'
+  name: 'App',
+  components:{
+        HomeHead,
+        NavRouter
+  },
+  mouted (){
+  }
 }
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang='stylus' scoped>
+@import '~stylus/variable';
+ 
 </style>

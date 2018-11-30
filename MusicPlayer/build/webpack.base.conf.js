@@ -35,11 +35,21 @@ module.exports = {
     extensions: ['.js', '.vue', '.json'],
     alias: {
       '@': resolve('src'),
+      'stylus':resolve('src/common/stylus'),
+      'image':resolve('src/common/image'),
+      'fonts':resolve('src/common/fonts'),
+      'api':resolve('src/api'),
+      'js':resolve('src/common/js'),
+      'components':resolve('src/common/components'),
+      'common':resolve('src/common'),
+      
+    
+      
     }
   },
   module: {
     rules: [
-      ...(config.dev.useEslint ? [createLintingRule()] : []),
+      // ...(config.dev.useEslint ? [createLintingRule()] : []),
       {
         test: /\.vue$/,
         loader: 'vue-loader',
