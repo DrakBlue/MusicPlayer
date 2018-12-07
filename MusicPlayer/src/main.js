@@ -9,8 +9,14 @@ import 'stylus/reset.css'
 import 'stylus/index.styl'
 import 'stylus/iconfont/iconfont.css'
 import 'stylus/iconfont/iconfont.js'
+import VueLazyLoad from 'vue-lazyload'
 
 Vue.use(VueAwesomeSwiper)
+Vue.use(VueLazyLoad,{
+  // error: './common/image/logo.png',
+  // loading:'./common/image/loading.gif',
+  try:3
+})
 Vue.config.productionTip = false
 //解决300毫秒延时
 fastclick.attach(document.body)

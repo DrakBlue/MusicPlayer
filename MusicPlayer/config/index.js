@@ -14,14 +14,16 @@ module.exports = {
       '/api/getDiscList': {
         target: 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg',
         bypass: function (req, res, proxyOptions) {
-          console.log("原路径：" + req.originalUrl, "代理路径：" + req.path)
+          // console.log("原路径：" + req.originalUrl, "代理路径：" + req.path)
           req.headers.referer = 'https://c.y.qq.com';
           req.headers.host = 'c.y.qq.com';
         },
         pathRewrite: {
           '^/api/getDiscList': ''
         }
-      }
+      },
+
+      
     },
 
     // Various Dev Server settings

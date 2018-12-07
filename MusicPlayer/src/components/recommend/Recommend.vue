@@ -1,48 +1,54 @@
 <template>
   <div>
-    <div class="line" ref="Line"></div>
-    <div class="recommend" ref="wrapper">
+    <better-scroll ref="refresh" class="recommend">
       <div>
+        <div class="line" ref="Line"></div>
         <div class="slider">
           <swiper :options="swiperOption" class="slider-package">
             <swiper-slide v-for="item in slider" :key="item.id" class="slide-item">
+              <a href="http://www.baidu.com">
               <img :src="item.picUrl" alt class="img-slide">
+              </a>
+              
             </swiper-slide>
             <div class="swiper-pagination" slot="pagination"></div>
           </swiper>
         </div>
         <div class="song-mean">热门歌单</div>
-
-        <div class="items">
-          <div v-for="item in List" class="item-box" :key="item.dissid">
-            <div class="icon">
-              <i class="iconfont icon-icon-test">
-                <span class="test-num">{{(item.listennum/10000).toFixed(1)}}万</span>
-              </i>
-              <i class="iconfont icon-shuangsechangyongtubiao-"></i>
+        <load-component class="load" v-show="!List.length"></load-component>
+        <div v-for="(page,index) in pages" class="page" :key="index">
+          <div v-for="item in page" :key="item.dissid">
+            <div class="item-page">
+              <div class="page-imag">
+                <img @load="refresh" v-lazy="item.imgurl" style="width:10rem;height:10rem;">
+                <div class="icon">
+                  <div>
+                    <i class="iconfont icon-icon-test"></i>
+                    <span class="test-num">{{(item.listennum/10000).toFixed(1)}}万</span>
+                  </div>
+                  <i class="iconfont icon-shuangsechangyongtubiao-"></i>
+                </div>
+              </div>
+              <div class="item-des">
+                <i class="iconfont icon-yaowan1"></i>
+                <div v-text="item.dissname" class="des"></div>
+              </div>
             </div>
-            <img :src="item.imgurl" alt class="item-imag">
-            <div class="song-message">
-              <i class="iconfont icon-yaowan1"></i>
-              <div>{{item.dissname}}</div>
-            </div>
-          </div>
-          <div class="get-more">
-            ...获取更多
-            <i class="iconfont icon-jiantouzuo"></i>
           </div>
         </div>
       </div>
-    </div>
+    </better-scroll>
   </div>
 </template>
 
 <script>
-import { getRcommendSlide } from "api/getRecommendSlide";
-import {  getDiscList } from "api/getRecommendContainer.js";
+import { getRcommendSlide, getDiscList } from "api/getRecommendSlide";
+// import { getDiscList } from "api/getRecommendContainer.js";
 import { OK } from "js/config";
 import BScroll from "better-scroll";
-import axios from 'axios'
+import axios from "axios";
+import BetterScroll from "../common/scroll";
+import LoadComponent from "../common/load";
 export default {
   name: "Recommend",
   data: function() {
@@ -55,18 +61,22 @@ export default {
         observeParents: true, //修改swiper的父元素时，自动初始化swiper
         autoplay: 5000,
         paginationClickable: false,
-        autoplayDisableOnInteraction:false
+        autoplayDisableOnInteraction: false
       },
+      scrollReq: false,
+      timer: null,
       slider: null,
       songList: null,
-      List:[]
+      List: []
     };
   },
-  components: {},
+  components: {
+    BetterScroll,
+    LoadComponent
+  },
   methods: {
     _getrecommend() {
       getRcommendSlide().then(res => {
-        // console.log(res);
         if (res.code == OK) {
           this.slider = res.data.slider;
           this.songList = res.data.songList;
@@ -74,38 +84,45 @@ export default {
       });
     },
     _getrecommendContaine() {
-       getDiscList().then(res=>{
-         console.log(res)
-         if(res.code==OK){
-           this.List = res.data.list
-         }
-       })
-    },
-    scrollFun() {
-        let line = -this.scroll.y;
-        if(this.scroll.y>=0){
-            line=0
-            this.$refs.Line.style.width = line + "px";
+      getDiscList().then(res => {
+        if (res.code == OK) {
+          this.List = res.data.list;
         }
-        this.$refs.Line.style.width = line/10 + "px";
-        }
-      
-  },
-  mounted() {
-    if (!this.scroll) {
-      this.scroll = new BScroll(this.$refs.wrapper, {
-        probeType: 3
       });
+    },
+    Trim(str, is_global) {
+      var result;
+      result = str.replace(/(^\s+)|(\s+$)/g, "");
+      if (is_global.toLowerCase() == "g") {
+        result = result.replace(/\s/g, "");
+      }
+      return result;
+    },
+    refresh() {
+      if (!this.refreshJudge) {
+        this.$refs.refresh.refresh();
+        this.refreshJudge = true;
+      }
     }
-
-    if (this.scroll) {
-      this.scroll.on("scroll", this.scrollFun);
-      this.scroll.on('flick',this.scrollFun)
+  },
+  mounted() {},
+  computed: {
+    pages() {
+      //拆分数组
+      let pages = [];
+      this.List.forEach((item, index) => {
+        const page = Math.floor(index / 3);
+        if (!pages[page]) {
+          pages[page] = [];
+        }
+        pages[page].push(item);
+      });
+      return pages;
     }
   },
   created() {
-    this._getrecommend()
-    this._getrecommendContaine()
+    this._getrecommend();
+    this._getrecommendContaine();
   }
 };
 </script>
@@ -114,21 +131,21 @@ export default {
 <style lang="stylus" scoped >
 @import '~stylus/variable.styl';
 
-.line {
-  width: 0rem;
-  margin-top: 1rem;
-  border-bottom: 0.1rem solid $color-them-icon;
-  color: $color-text-lll;
-}
-
 .recommend {
   position: absolute;
   bottom: 0;
   left: 0;
   top: 0;
   right: 0;
-  margin-top: 10rem;
+  margin-top: 7rem;
   overflow: hidden;
+
+  .line {
+    width: 100%;
+    margin-top: 1rem;
+    border-bottom: 0.1rem solid $color-them-icon;
+    color: $color-text-lll;
+  }
 
   .slider {
     height: 0;
@@ -157,76 +174,57 @@ export default {
     letter-spacing: 0.25rem;
   }
 
-  .items {
-    margin-bottom: 2rem;
-    margin-top: 1.5rem;
-    padding: 0 1rem;
+  .load {
+    margin: 0 autp;
+    overflow: hidden;
+    height: 20rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .page {
     display: flex;
     justify-content: space-around;
-    flex-wrap: wrap;
 
-    .item-box {
-      padding: 0.5rem 0.5rem 6rem 0.5rem;
-      width: 40%;
-      display: inline;
-      position: relative;
-      background-color: $color-text-l;
-      margin-bottom: 2rem;
-      border-radius: 0.3rem;
-      box-shadow: 0.1rem 0.1rem 0.3rem #eee;
+    .item-page {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1rem;
 
-      .icon {
-        position: absolute;
-        margin-top: 100%;
-        width: 90%;
-        top: -3rem;
-        display: flex;
-        justify-content: space-between;
+      .page-imag {
+        position: relative;
+        width: 10rem;
 
-        .iconfont {
-          display: block;
-
-          .test-num {
-            font-size: $font-size-xs;
-          }
+        .icon {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          display: flex;
+          justify-content: space-between;
         }
       }
 
-      .item-imag {
-        width: 100%;
-      }
-    }
+      .item-des {
+        margin: 0.5rem 0 1rem 0;
+        width: 10rem;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        word-wrap: break-word;
 
-    .song-message {
-      padding: 0.2rem 0rem;
-      text-indent: 0.5rem;
-      line-height: 1.7rem;
-      position: absolute;
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 1; /* * 多行文本溢出... */
-      font-size: $font-size-s;
-      margin-top: 90%;
-      top: 1.5rem;
-      overflow: hidden;
+        .icon-shuangsechangyongtubiao- {
+          position;
+          top: 0.5rem;
+        }
 
-      .icon-yaowan1 {
-        text-indent: -0.5rem;
-        color: $color-them-icon;
-      }
-    }
-
-    .get-more {
-      color: $color-text-lll;
-      line-height: 2rem;
-      font-size: $font-size-s;
-      margin: 0 auto;
-
-      .icon-jiantouzuo {
-        display: inline;
-        font-size: $font-size-xl;
-        vertical-align: middle;
-        color: $color-them-icon;
+        .des {
+          display: inline-block;
+          text-indent: 1rem;
+          line-height: 1.5rem;
+        }
       }
     }
   }

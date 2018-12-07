@@ -19,7 +19,7 @@ export default {
 <style lang="stylus" scoped>
     .imag
         width 5rem
-        height 5rem       
-
-        
+        height 5rem 
+        display block
+        margin 0 auto
 </style>
