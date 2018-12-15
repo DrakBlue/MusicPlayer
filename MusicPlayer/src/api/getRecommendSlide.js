@@ -1,5 +1,5 @@
-import jsonp from 'js/jsonp'
-import {commonConfig,options,OK} from 'js/config'
+import jsonp from './jsonp'
+import {commonConfig,options,OK} from './config'
 import axios from 'axios'
 
 
@@ -36,7 +36,6 @@ export function getDiscList() {
       params: data
     }).then((res) => {
         // return Promise function,it has message res.data
-        console.log(res)
       return Promise.resolve(res.data)
     })
   }

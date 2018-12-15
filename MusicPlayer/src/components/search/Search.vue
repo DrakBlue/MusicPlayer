@@ -5,14 +5,24 @@
 </template>
 
 <script>
+import {mapMutations,mapGetters} from 'vuex'
+
 export default {
+    name:'Loda',
     props:{
         imgUrl:{
             type:String,
             default: require('image/loading.gif')
         }
     },
-    name:'Loda'
+    methods:{
+        ...mapMutations({
+            setRouteName:'SET_ROUTE_NAME'
+        })
+    },
+    activated (){
+        this.setRouteName('/search')
+    }
 }
 </script>
 

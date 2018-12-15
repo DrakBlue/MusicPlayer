@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <transition name="slide">
     <better-scroll ref="refresh" class="recommend">
       <div>
         <div class="line" ref="Line"></div>
@@ -14,41 +14,48 @@
             <div class="swiper-pagination" slot="pagination"></div>
           </swiper>
         </div>
-        <div class="song-mean">热门歌单</div>
-        <load-component class="load" v-show="!List.length"></load-component>
-        <div v-for="(page,index) in pages" class="page" :key="index">
-          <div v-for="item in page" :key="item.dissid">
-            <div class="item-page">
-              <div class="page-imag">
-                <img @load="refresh" v-lazy="item.imgurl" style="width:10rem;height:10rem;">
-                <div class="icon">
-                  <div>
-                    <i class="iconfont icon-icon-test"></i>
-                    <span class="test-num">{{(item.listennum/10000).toFixed(1)}}万</span>
+        <div ref="rocommedHot">
+          <div class="song-mean">热门歌单</div>
+          <load-component class="load" v-show="!List.length"></load-component>
+          <div  v-for="(page,index) in pages" class="page" :key="index">
+            <div v-for="item in page" :key="item.dissid">
+              <div class="item-page">
+                <div class="page-imag">
+                  <img @load="refresh" v-lazy="item.imgurl" style="width:10rem;height:10rem;">
+                  <div class="icon">
+                    <div class="singer-num">
+                      <i class="iconfont icon-icon-test"></i>
+                      <span class="test-num">{{(item.listennum/10000).toFixed(1)}}万</span>
+                    </div>
+                    <i class="iconfont icon-shuangsechangyongtubiao-"></i>
                   </div>
-                  <i class="iconfont icon-shuangsechangyongtubiao-"></i>
                 </div>
-              </div>
-              <div class="item-des">
-                <i class="iconfont icon-yaowan1"></i>
-                <div v-text="item.dissname" class="des"></div>
+                <div class="item-des">
+                  <i class="iconfont icon-yaowan1"></i>
+                  <div v-text="item.dissname" class="des"></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </better-scroll>
-  </div>
+  </transition>
 </template>
 
 <script>
 import { getRcommendSlide, getDiscList } from "api/getRecommendSlide";
 // import { getDiscList } from "api/getRecommendContainer.js";
-import { OK } from "js/config";
+import { OK } from "api/config";
 import BScroll from "better-scroll";
 import axios from "axios";
 import BetterScroll from "../common/scroll";
 import LoadComponent from "../common/load";
+import { mapMutations } from 'vuex';
+// import routeName from '@/common/js/dom.js'
+const routeName = ['/recommend','/singer','/rank','/search']
+let  index = 0
+
 export default {
   name: "Recommend",
   data: function() {
@@ -61,7 +68,8 @@ export default {
         observeParents: true, //修改swiper的父元素时，自动初始化swiper
         autoplay: 5000,
         paginationClickable: false,
-        autoplayDisableOnInteraction: false
+        autoplayDisableOnInteraction: false,
+        routeFlag:true
       },
       scrollReq: false,
       timer: null,
@@ -75,6 +83,9 @@ export default {
     LoadComponent
   },
   methods: {
+    ...mapMutations({
+      setRouteName:'SET_ROUTE_NAME'
+    }),
     _getrecommend() {
       getRcommendSlide().then(res => {
         if (res.code == OK) {
@@ -103,9 +114,31 @@ export default {
         this.$refs.refresh.refresh();
         this.refreshJudge = true;
       }
-    }
+    },
+    touchStart (e){
+      this.startX = e.touches[0].clientX
+    },
+    touchMove(e){
+        let x = e.touches[0].clientX
+        let X =  this.startX - x
+        if(X>100){
+          this.$router.push(routeName[1])
+
+        }
+    },
+
   },
-  mounted() {},
+  mounted() {
+    
+  },
+  updated(){
+    this.$refs.rocommedHot.addEventListener('touchstart',this.touchStart)
+    this.$refs.rocommedHot.addEventListener('touchmove',this.touchMove)    
+    
+  },
+  activated (){
+    this.setRouteName('/recommend')
+  },
   computed: {
     pages() {
       //拆分数组
@@ -123,6 +156,7 @@ export default {
   created() {
     this._getrecommend();
     this._getrecommendContaine();
+
   }
 };
 </script>
@@ -203,6 +237,12 @@ export default {
           right: 0;
           display: flex;
           justify-content: space-between;
+          .singer-num{
+            align-self flex-end
+            }
+          .icon-shuangsechangyongtubiao-{
+              font-size 2rem
+            }
         }
       }
 
@@ -215,10 +255,7 @@ export default {
         overflow: hidden;
         word-wrap: break-word;
 
-        .icon-shuangsechangyongtubiao- {
-          position;
-          top: 0.5rem;
-        }
+        
 
         .des {
           display: inline-block;

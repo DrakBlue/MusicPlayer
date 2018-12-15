@@ -9,7 +9,7 @@ import Singer from '@/components/singer/Singer'
   import OutLand from '@/components/singer/components/out-land'
   import EA from '@/components/singer/components/e-a.vue'
   import BangZi from '@/components/singer/components/bang-zi.vue'
-
+  import ID from '@/components/singer-detail/singer-detail.vue'
 
 
   
@@ -67,6 +67,11 @@ export default new Router({
         path: 'bang-zi',
         name: 'BangZi',
         component: BangZi
+        },
+        {
+          path:':id',
+          name:'id',
+          component:ID
         },
         
         

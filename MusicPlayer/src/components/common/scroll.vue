@@ -30,6 +30,14 @@ export default {
             scrollFlag:{
                 type:Boolean,
                 default:false
+            },
+            scrollFlagSongList:{
+                type:Boolean,
+                default:false
+            },
+            stopScrollTOUnder:{
+                type:Boolean,
+                default:false
             }
         },
         components:{
@@ -55,16 +63,20 @@ export default {
                     click:this.click,
                     scrollbar:this.scrollbar
                 })
+
                 if(this.scrollFlag){
                     let me = this
                     this.scroll.on("scroll",(pos)=>{
-                            me.$emit("onscroll",pos)
+                            let dirY = me.scroll.directionY
+                            let maxY = me.scroll.maxScrollY
+                            me.$emit("onscroll",pos,dirY,maxY)
                     })
                     this.scroll.on("scrollEnd",(pos)=>{
                             me.$emit("onscrollend",pos)
-                    })
-                   
+                    }) 
                 }
+
+
             },
             enableScroll (){
                 this.scroll&&this.scroll.enable()
@@ -75,12 +87,6 @@ export default {
             refresh (){
                 this.scroll&&this.scroll.refresh()
             },
-            scrollstart (){
-            //    this.scroll&&this.scroll.on("scroll",this.scrollstart)
-            },
-            scrollstart (){
-                console.log(1)
-            }
             
         },
         watch:{
@@ -96,7 +102,6 @@ export default {
             
         },
         activated (){
-            
         }
 
 

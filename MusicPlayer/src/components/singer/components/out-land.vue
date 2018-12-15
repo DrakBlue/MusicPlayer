@@ -1,8 +1,7 @@
 <template>
-
     <better-scroll class="in-land"  >
         <div>
-            <div class="inland-box" v-for="item of list" :key="item.id">
+            <div class="inland-box" v-for="item of list" :key="item.id" @click="selectSinger(item)">
                 <div class="inland-imag-box">
                     <img @land="refresh" class="inland-imag" v-lazy="item.imag" alt>
                 </div>
@@ -14,8 +13,9 @@
 
 <script>
 import { getSingerList } from "api/getSinger.js";
-import { OK } from "js/config";
+import { OK } from "api/config";
 import BetterScroll from "../../common/scroll";
+import {mapMutations} from 'vuex'
 class Singer {
   constructor(id, name) {
     (this.id = id),
@@ -37,6 +37,15 @@ export default {
 
         },
   methods: {
+    selectSinger (singer){
+      this.$router.push({
+        path:`/singer/${singer.id}`
+      })
+      this.setSinger(singer)
+    },
+    ...mapMutations({
+      setSinger:'SET_SINGER'
+    }),
     //获取数据
     _getSingerList() {
       getSingerList().then(res => {
@@ -81,28 +90,5 @@ export default {
 
 
 <style lang="stylus" scoped >
-@import '~stylus/variable.styl'
- .in-land
-    position absolute
-    top 12rem
-    bottom 0
-    left 0
-    right 0
-    overflow hidden 
-    .inland-box
-         display flex
-         align-items center
-         .inland-imag-box
-             height 0
-             padding-bottom: 7rem 
-             margin: 1rem 0 1rem 1rem
-             .inland-imag
-                 width: 7rem
-                 height 7rem
-                 border-radius: 50%
-        .inland-name
-            flex-grow: 1
-            padding-left: 2rem
-            color: $color-text-d 
-
+@import '../css/singer-class.styl';
 </style>

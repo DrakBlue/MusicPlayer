@@ -1,10 +1,11 @@
 <template>
-<div ref="refreshchild">
+
+<div ref="refreshchild" >
     <better-scroll ref="refresh" tag="div" class="ref" :scrollFlag="scrollFlag" @onscroll="onscroll" @onscrollend="onscrollend" :probeType="probeType">
       <div>
         <div class="hot" ref="hotbox">
           <div class="title" ref="hot" >热门</div>
-          <div class="hot-box" v-for="item of hot" ref="hotitem" :key="item.id">
+          <div class="hot-box" @click="selectSinger(item)" v-for="item of hot" ref="hotitem" :key="item.id">
             <div class="hot-imag-box">
               <img class="hot-imag" v-lazy="item.imag" alt>
             </div>
@@ -15,7 +16,7 @@
         <div class="all">
           <div class="box-item" v-for="(item,index) of All" :key="index" ref="keyitem">
             <div class="item-key" v-text="item.title" ref="singers"></div>
-            <div v-for="singer in item.Singers"  class="item-box" :key="singer.id" >
+            <div v-for="singer in item.Singers" @click="selectSinger(singer)"  class="item-box" :key="singer.id" >
               <div class="imag-box">
                 <img @load="refresh" v-lazy="singer.imag" alt class="imag">
               </div>
@@ -29,15 +30,17 @@
     <ul class="keylist" ref="keylisturl" @click="checkoutKey($event)" @touchstart="ontouchstart" @touchmove.prevent.stop="ontouchmove">
       <li :class="{'key':true,'Changecolor':i==index}" ref="keylist" v-for="(item,index) in keylist" :key="index" :indexPoint="index">{{item[0]}}</li>
     </ul>
-    
 </div>
+
 </template>
 
 <script>
 import { getSingerList } from "api/getSinger.js";
-import { OK } from "js/config";
+import { OK } from "api/config";
 import BetterScroll from "../../common/scroll";
-
+import {mapMutations} from 'vuex'
+import {prefixStyle} from '@/common/js/dom.js'
+let transform = prefixStyle('transfrom')
 
 const HOT_Singer = "热门";
 const HOT_LENGTH = 11;
@@ -107,6 +110,15 @@ export default {
 
   },
   methods: {
+    selectSinger (singer){
+      this.$router.push({
+        path:`/singer/${singer.id}`
+      })
+      this.setSinger(singer)
+    },
+    ...mapMutations({
+      setSinger:'SET_SINGER',
+    }),
     checkoutKey (event){
         let index = event.target.getAttribute("indexPoint")
         this.__scroll(this.$refs.singers,this.$refs.hot,index)
@@ -183,9 +195,7 @@ export default {
           }else{
             fixedTop=0
           }
-          this.$refs.fixed.style.transform = `translate3d(0,${-fixedTop}px,0)`
-          
-          
+          this.$refs.fixed.style.transform = `translate3d(0,${-fixedTop}px,0)` 
         }
       }
     },
@@ -227,43 +237,13 @@ export default {
           title: HOT_Singer,
           Singers: []
         },
-        Land: {
-          title: Land,
-          Singers: []
-        },
-        Island: {
-          title: IsLand,
-          Singers: []
-        },
-        Ea: {
-          title: E_A,
-          Singers: []
-        },
-        Bangzi: {
-          title: BNANG_ZI,
-          Singers: []
-        },
         All: {}
       };
       list.forEach((item, index) => {
         if (index < HOT_LENGTH) {
           map.hot.Singers.push(new Singer(item.Fsinger_mid, item.Fsinger_name));
         }
-        if (item.Farea == 1) {
-          map.Land.Singers.push(
-            new Singer(item.Fsinger_mid, item.Fsinger_name)
-          );
-        } else if (item.Farea == 0) {
-          map.Island.Singers.push(
-            new Singer(item.Fsinger_mid, item.Fsinger_name)
-          );
-        } else if (item.Farea == 2) {
-          map.Bangzi.Singers.push(
-            new Singer(item.Fsinger_mid, item.Fsinger_name)
-          );
-        } else {
-          map.Ea.Singers.push(new Singer(item.Fsinger_mid, item.Fsinger_name));
-        }
+        
         let k = item.Findex;
        
         if (!map.All[k]) {
@@ -300,7 +280,6 @@ export default {
     
   },
   activated (){
-    
   }
 };
 </script>
@@ -308,4 +287,5 @@ export default {
 
 <style lang="stylus" scoped >
 @import '../css/singer.styl';
+
 </style>
