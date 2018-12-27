@@ -1,13 +1,14 @@
 <template>
 
-<better-scroll class="Wrapper"  ref="refresh"  :scrollFlag="scrollFlag" @onscroll="onscroll" :probeType="probeType" >
-    <div class="song-list" ref="songList"> 
-        <ul class="song-box" @click="playMusic(item,index)" v-for="(item,index) in SingerDetail" :key="item.id" @load="refresh">
-            <li class="song-name">{{item.name}}</li>
-            <li class="singer-name">{{item.singer}}</li>
-        </ul>
-        <div class="load" v-show="!SingerDetail">
-            <load-component></load-component>
+<better-scroll :initDelay='100'  class="Wrapper" :data="list"   ref="refresh"  :scrollFlag="scrollFlag" @onscroll="onscroll" :probeType="probeType" >
+    <div>
+        <div class="song-list" ref="songList" > 
+            <ul   class="song-box" @click="selectItem(item,index)" v-for="(item,index) in list" :key="item.id">
+                <li v-show="rank" class="rank" v-html="Ranking(index)"></li>
+                <li class="song-name">{{item.name}}</li>
+                <li class="singer-name">{{item.singer}}</li>
+            </ul>
+            
         </div>
     </div>
 </better-scroll>
@@ -15,109 +16,116 @@
 </template>
 
 <script>
+
 import {mapGetters, mapMutations} from 'vuex'
-import { getSingerDetail } from "api/getSinger.js";
-import { OK } from "api/config";
+import { OK } from "@/api/config";
 import {CreateSong,_formatSongs} from '@/common/js/song.js'
-import LoadComponent from "./load";
+import { getsongList } from "@/api/getSinger.js";
 import BetterScroll from './scroll.vue'
+import {playlistMixin} from '@/common/js/mixin.js'
 
 export default {
+    mixins: [playlistMixin],
+
+    props:{
+        list:{
+            type:Array,
+            default:()=>{return []}
+        },
+        rank:{
+            type:Boolean,
+            default:false
+        }
+    },
     data(){
         return{
-            SingerDetail:null,
-            lastSinger:null,
             scrollFlag:true,
-            
+            songList:[]
         }
     },
     components:{
-        LoadComponent,
         BetterScroll
     },
-    props:{
-        
+    watch:{
+       
     },
     methods:{
-        playMusic (item,index){
-            this.$emit('playMusic',item,index,this.SingerDetail)
+        Ranking(index){
+            if(index==0){
+                return `<svg class="icon-svg" aria-hidden="true"><use xlink:href="#icon-guanjun"></use></svg>`
+            }else if(index==1){
+                return  `<svg class="icon-svg" aria-hidden="true"><use xlink:href="#icon-yajun"></use></svg>`
+            }else if(index==2){
+                return  `<svg class="icon-svg" aria-hidden="true"><use xlink:href="#icon-jijun"></use></svg>`
+            }else{
+                return index+1
+            }
         },
-        ...mapMutations({
-            setPlayRadom:'SET_PLAYRADOM',
-            
-        }),
+        handlePlaylist (playlist){
+            const Bottom = playlist.length > 0 ? '70px' : ''
+            this.$refs.refresh.$el.style.bottom = Bottom
+            this.$refs.refresh.refresh()
+        },
+        handlerefresh(){
+            this.$refs.refresh.refresh()
+        },
+        selectItem (item,index){
+            this.$emit('playMusic',item,index)
+        },
         onscroll (pos,dirY,maxY){
             this.$emit("onscroll",pos,dirY,maxY)
         },
-        refresh (){
-            if(this.refreshFlag){
-                this.$refs.refresh.refresh()
-                this.refresh=false
-            }
-        },
-       _getSingerDetail (){
-           if(!this.singer.id){
-               this.$router.push('/singer')
-               return
-           }
-           getSingerDetail(this.singer.id).then((res)=>{
-               if(res.code==OK){
-                 this.SingerDetail =  _formatSongs(res.data.list)
-                 this.setPlayRadom(true)
-                 this.$emit('PushSongs',this.SingerDetail)
-               }
-           })
-       },
     },
     computed:{
         ...mapGetters([
-            'singer','Play_Radom'
-        ]),
-    },
-    mounted (){
-      
-    },
-    updated(){
-        
-    },
-    activated (){
-        if(this.lastSinger!==this.singer){
-            this.setPlayRadom(false)
-            this.SingerDetail=null
-            this._getSingerDetail()
-            this.lastSinger =this.singer
-        }
+            'disc',
+            'singer',
+        ]),         
     },
     created (){
-        this._getSingerDetail()   
-        this.refresh()
+        this.listShow = false
         this.probeType=3  
-        this.refreshFlag=true
     }
 }
 </script>
 
 <style lang="stylus" scoped>
 @import '~stylus/variable';
+
 .Wrapper
     position absolute
     transform-origin top
     left 0
     top 0
-    bottom 6rem
+    bottom 0
     right 0
     .song-list
-        background-color $color-background 
+        background-color $color-background
+        padding-top .5rem
         .song-box
-            padding 1.5rem 0 1.5rem 2rem
+            line-height 3rem
+            margin 1rem 0 .5rem 2rem 
+            .rank
+                float left
+                font-size 2rem
+                margin-right 2rem
+                width 2rem
+                height 2.5rem
+                text-align center
             .song-name
-                padding 0 0 1rem 0
+                font-size 1.4rem
+                line-height 2rem
+                margin  0 0 .2rem 0
             .singer-name
-                font-size 1.2rem
+                line-height 1.5rem
+                font-size 1.1rem
                 color $color-text-l
                 white-space nowrap
                 overflow hidden
                 text-overflow ellipsis      
-        .load
-            margin-top 50%
+        
+
+
+
+            
 </style>

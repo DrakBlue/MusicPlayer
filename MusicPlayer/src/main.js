@@ -20,7 +20,6 @@ Vue.use(VueLazyLoad,{
 Vue.config.productionTip = false
 //解决300毫秒延时
 fastclick.attach(document.body)
-
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

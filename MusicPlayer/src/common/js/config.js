@@ -1,0 +1,13 @@
+export  function Reduce (fun,delay){
+    let timer
+    return function (...args){
+        if (timer){
+            clearTimeout(timer)
+        }
+       timer=setTimeout(()=>{
+            fun.apply(this,args)
+        },delay)
+    }
+}
+
+

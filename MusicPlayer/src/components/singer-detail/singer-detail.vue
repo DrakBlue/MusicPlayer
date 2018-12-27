@@ -1,128 +1,85 @@
 <template>
-    <div class="singer-detail">
-        <detail-title ref="title" ></detail-title>
-        <singer-imag @handleplayRadomMusic="handleplayRadomMusic" ref="bgImag"></singer-imag>
-        <songs-list @playMusic='playMusic' @PushSongs='getSongs' ref="songslist" @onscroll="onscroll" ></songs-list>
-    </div>
+
+    <slide>
+        <music-list :SongList='SongList'  :image='image' :title='title'></music-list>
+    </slide>
+
 </template>
 
 <script>
-import SingerImag from '../common/singer-imag'
-import SongsList from '../common/songs-list'
-import DetailTitle from '../common/detail-title'
-import {mapActions,mapGetters} from 'vuex'
-import {prefixStyle} from '@/common/js/dom.js'
-let transform = prefixStyle('transfrom')
-let filter = prefixStyle('filter')
+
+
+//js
+import { getsingerDetail } from "@/api/getSinger.js";
+import {CreateSong,_formatSongs} from '@/common/js/song.js'
+import { OK } from "@/api/config";
+//components
+
+import MusicList from '../music/music-list'
+import Slide from '../slide-slot/slide-LtoR'
+//vuex
+import {mapActions,mapGetters,mapMutations} from 'vuex'
+
 export default {
     data (){
         return {
             titleHeight:null,
             SongListTop:null,
-            Songs:[]
+            SongList:[]
         }
     },
     computed: {
+        image(){
+            return this.singer.imag
+        },
+        title (){
+            return this.singer.name
+        },
         ...mapGetters([
-            'screen_size'
+            'singer'
         ]),
+    },
+    watch:{
+        singer (newVal,oldVal){
+            if(newVal!==oldVal){
+                this.setRadomShow(false)
+                this.SongList = []
+                this._getsingerDetail ()
+            }
+         
+        }
     },
     methods:{
-        getSongs(songs){
-          this.Songs = songs
-        },
-        handleplayRadomMusic (singer){
-            let length = this.Songs.length
-            let index  =Math.floor(Math.random()*length) 
-            let songs = this.Songs
-            this.playMusic(null,index,songs)
-        },
-        playMusic (item,index,songs){
-            if(!this.screen_size){
-                    this.selectMusic({
-                    list:songs,
-                    index,
-                    screenSize:false
-                })
-            }else{
-                    this.selectMusic({
-                    list:songs,
-                    index,
-                    screenSize:true
-                })    
-            }
-        },
-        ...mapActions([
-            'selectMusic'     
-        ]),
-        onscroll (pos,dirY,maxY){
-            this.$refs.bgImag.$el.style.filter=`blur(0)`
-            let y = pos.y
-            if(pos.y>0){
-                let  Scale =Math.max(1,(y/3+100)/100)
-                this.$refs.bgImag.$el.style.transform=`scale(${Scale})` 
-            }
-           if(this.SongListTop&&this.titleHeight){
-               y=-y
-               let distance = this.SongListTop-this.titleHeight
-               if(dirY==0||dirY==1){
-                   this.$refs.bgImag.$el.style.filter=`blur(${y/20}px)`
-                   if(y>=distance){                       
-                        this.$refs.bgImag.$el.style.filter=`blur(0)`
-                        this.$refs.bgImag.$el.style.paddingBottom = '40px'
-                        this.$refs.bgImag.$el.style.zIndex= 99
-                    }
-               }
+        ...mapMutations({
+            setRadomShow:'SET_PLAYRADOM'
+        }),
+        _getsingerDetail (){
+           if(!this.singer.id){
+               this.$router.push('/singer')
+               return
            }
-           if(dirY==-1||dirY==0){
-               let distance = this.SongListTop-this.titleHeight
-                if(pos.y>=-distance){
-                    this.$refs.bgImag.$el.style.paddingBottom = '70%'
-                    this.$refs.bgImag.$el.style.zIndex = 0
-                }
-            }
-           
+           getsingerDetail(this.singer.id).then((res)=>{
+               if(res.code==OK){
+                    Promise.resolve(_formatSongs(res.data.list)).then(res=>{
+                            this.SongList = res
+                            this.setRadomShow(true)
+                    })
+               }
+           })
         },
 
-    },
-    mounted (){
-        
-    },
-    updated(){
-        
     },
     created (){
-    },
-    activated (){
-        this.titleHeight = this.$refs.title.$el.offsetHeight
-        this.SongListTop =  this.$refs.bgImag.$el.offsetHeight
-        this.$refs.songslist.$el.style.top = this.$refs.bgImag.$el.offsetHeight+'px'
-        // this.$refs.playradom.$el.style.top = this.$refs.bgImag.$el.offsetHeight/1.2+'px'
+        this._getsingerDetail()
     },
     components: {
-        DetailTitle,
-        SingerImag,
-        SongsList,
-
+        MusicList,
+        Slide
     },
-    
-
     
 }
 </script>
 
 <style lang="stylus" scoped>
-@import '~stylus/variable';
- .singer-detail
-     position fixed
-     width 100%
-     top 0 
-     bottom 0
-     left 0
-     bottom 0
-     overflow hidden
-     z-index 1
-     background-color $color-background 
-    
-     
+ 
 </style>

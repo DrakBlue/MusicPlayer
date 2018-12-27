@@ -3,10 +3,11 @@
 
       <home-head></home-head>
       <nav-router></nav-router>
-      <players-page></players-page>
-      <keep-alive>
-          <router-view/>
-      </keep-alive>
+        <players-page></players-page>
+        <keep-alive>
+            <router-view/>
+        </keep-alive>
+    
   </div>
 </template>
 
@@ -21,6 +22,7 @@ Vue.use(animate)
 import HomeHead from './components/home/home-head'
 import NavRouter from './components/nav/nav-router'
 import PlayersPage from './components/PlayersPage/players-page'
+
 
 export default {
   name: 'App',
@@ -40,7 +42,7 @@ export default {
   components:{
         HomeHead,
         NavRouter,
-        PlayersPage
+        PlayersPage,
   },
   
   undated(){
@@ -54,5 +56,10 @@ export default {
 
 <style lang='stylus' scoped>
 @import '~stylus/variable';
- 
+ #app
+   position fixed
+   left 0
+   right 0
+   top 0
+   bottom 0
 </style>

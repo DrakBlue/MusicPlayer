@@ -27,8 +27,8 @@
       </div>
       <div class="fix-title" ref="fixed" :index="keyindex" v-show="fixedtitle.show">{{fixedtitle.name}}</div>
     </better-scroll>
-    <ul class="keylist" ref="keylisturl" @click="checkoutKey($event)" @touchstart="ontouchstart" @touchmove.prevent.stop="ontouchmove">
-      <li :class="{'key':true,'Changecolor':i==index}" ref="keylist" v-for="(item,index) in keylist" :key="index" :indexPoint="index">{{item[0]}}</li>
+    <ul class="keylist" ref="keylisturl" @click.stop="checkoutKey($event)"   @touchstart.stop="ontouchstart" @touchmove.stop="ontouchmove">
+      <li   :class="{'key':true,'Changecolor':i==index}" ref="keylist" v-for="(item,index) in keylist" :key="index" :indexPoint="index">{{item[0]}}</li>
     </ul>
 </div>
 
@@ -40,6 +40,8 @@ import { OK } from "api/config";
 import BetterScroll from "../../common/scroll";
 import {mapMutations} from 'vuex'
 import {prefixStyle} from '@/common/js/dom.js'
+import {playlistMixin} from '@/common/js/mixin.js'
+
 let transform = prefixStyle('transfrom')
 
 const HOT_Singer = "热门";
@@ -59,6 +61,7 @@ class Singer {
 }
 
 export default {
+   mixins: [playlistMixin],
   name: "AllArea",
   props: {},
   data() {
@@ -110,6 +113,11 @@ export default {
 
   },
   methods: {
+    handlePlaylist (playlist){
+      const Bottom = playlist.length > 0 ? '70px' : ''
+      this.$refs.refresh.$el.style.bottom = Bottom
+      this.$refs.refresh.refresh()
+    },
     selectSinger (singer){
       this.$router.push({
         path:`/singer/${singer.id}`
@@ -123,6 +131,10 @@ export default {
         let index = event.target.getAttribute("indexPoint")
         this.__scroll(this.$refs.singers,this.$refs.hot,index)
         this._changecolor(this.$refs.keylist,index,"#fcd703")
+        let i = (event.pageY-this.$refs.keylisturl.offsetTop-15)/18.4 | 0
+        if(i<23){
+          this.fixedtitle.name=this.keylist[i]
+        }
     },
     _changecolor (e,index,co){
       for (let i in e ){
@@ -131,7 +143,9 @@ export default {
         }
       }
       if(index>=0&&!e.target&&index!=null){
-        e[index].style.color=co
+        if(e[index]){
+          e[index].style.color=co
+        }
       }
       
     },
@@ -164,6 +178,8 @@ export default {
           if(this.$refs.keylist.length>=index>=0){
             this._scroll(this.$refs.singers,this.$refs.hot,index-1)
             this._changecolor(this.$refs.keylist,index,"#fcd703")
+            this.fixedtitle.name=this.keylist[index]
+
           }
          
         }
@@ -242,10 +258,8 @@ export default {
       list.forEach((item, index) => {
         if (index < HOT_LENGTH) {
           map.hot.Singers.push(new Singer(item.Fsinger_mid, item.Fsinger_name));
-        }
-        
+        }  
         let k = item.Findex;
-       
         if (!map.All[k]) {
           this.keylist.push(k)
           map.All[k] = {
@@ -270,7 +284,6 @@ export default {
   },
   updated (){
     this.stratY = this.$refs.keylisturl.offsetTop
-    
   },
   beforeUpdata (){
   },

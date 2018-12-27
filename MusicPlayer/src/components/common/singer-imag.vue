@@ -1,7 +1,7 @@
 <template>
     <div class="bg" ref="bg" :style="bgImag">
         <div class="imag-cloth">
-            <play-radom @playRadomMusic='playRadomMusic(singer)'></play-radom>
+            <play-radom @playRadomMusic='playRadomMusic'></play-radom>
         </div>
     </div>
 </template>
@@ -15,27 +15,29 @@ export default {
     },
     data (){
         return {
-         
+
         }
     },
     props:{
        showRadom:{
            type:Number
+       },
+       Image:{
+           type:String,
+           default:''
        }
-       
     },
-    
-    computed:{
-        ...mapGetters([
-            'singer',
-        ]),
+    watch:{
+    },
+    computed:{ 
         bgImag (){
-            return `background:url(${this.singer.imag}) no-repeat;backgroundSize:cover;`
-        }
+                return `background:url(${this.Image}) no-repeat;backgroundSize:cover;`
+        },
+
     },
     methods:{
-       playRadomMusic(singer){
-           this.$emit('handleplayRadomMusic',singer)
+       playRadomMusic(){
+           this.$emit('handleplayRadomMusic')
        }
     },
     updated (){

@@ -1,5 +1,5 @@
 <template>
-    <div ref="wrapper">
+    <div ref="wrapper" >
         
         <slot></slot>
         
@@ -7,9 +7,15 @@
  </template>
 
 <script>
+import {mapGetters,mapMutations} from 'vuex'
 import BScroll from 'better-scroll'
 export default {
         name:'BetterScroll',
+        computed:{
+            ...mapGetters([
+                'minPlayState'
+            ])
+        },
         props:{
             click:{
                 type:Boolean,
@@ -38,6 +44,18 @@ export default {
             stopScrollTOUnder:{
                 type:Boolean,
                 default:false
+            },
+            upDataByScroll:{
+                type:Boolean,
+                default:false
+            },
+            momentum:{
+                type:Boolean,
+                default:true
+            },
+            initDelay:{
+                type:Number,
+                default:20
             }
         },
         components:{
@@ -58,12 +76,20 @@ export default {
                 if(!this.$refs.wrapper){
                     return
                 }
+                
                 this.scroll = new BScroll(this.$refs.wrapper,{
                     probeType:this.probeType,
                     click:this.click,
-                    scrollbar:this.scrollbar
+                    scrollbar:this.scrollbar,
                 })
 
+                if(this.upDataByScroll){
+                    this.scroll.on('scrollEnd',pos=>{
+                        if(pos.y>this.scroll.maxScrollY-50){
+                            this.$emit('scrollToEnd')
+                        }
+                    })
+                }
                 if(this.scrollFlag){
                     let me = this
                     this.scroll.on("scroll",(pos)=>{
@@ -75,8 +101,6 @@ export default {
                             me.$emit("onscrollend",pos)
                     }) 
                 }
-
-
             },
             enableScroll (){
                 this.scroll&&this.scroll.enable()
@@ -88,6 +112,11 @@ export default {
                 this.scroll&&this.scroll.refresh()
             },
             
+            ...mapMutations({
+                setMiniPlaterState:'SET_MINPLAYER_STATE'
+            }),
+            
+
         },
         watch:{
             data (){
@@ -98,11 +127,14 @@ export default {
         mounted (){
             setTimeout(()=>{
                 this._initScroll()
-            },20)
-            
+            },this.initDelay)            
         },
         activated (){
+        },
+        created(){
+            this.touch={}
         }
+
 
 
 

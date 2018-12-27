@@ -1,22 +1,27 @@
 <template>
     <div class="title"> 
            <i class="iconfont icon-jiantou_zuo" @click="back"></i>
-           <div class="singer-name" v-html="singer.name"></div>
+           <div class="singer-name" v-html="singerName"></div>
     </div>
 </template>
 
 <script>
 import {mapGetters} from 'vuex'
 export default {
+    props:{
+        singerName :{
+            type:String,
+            defaultL:''
+        }
+    },
     methods:{
         back (){
             this.$router.back()
         }
     },
-    computed:{
-        ...mapGetters([
-            'singer'
-        ]),
+    computed:{ 
+    },
+    deactivated(){
     }
 
 }

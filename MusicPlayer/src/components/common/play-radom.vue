@@ -1,5 +1,5 @@
 <template>
-    <div class="radom-box" v-show="Play_Radom" @click="playRadomMusic">
+    <div class="radom-box"  @click="playRadomMusic" v-show="Play_Radom">
         <i class="iconfont icon-icon-test"></i>
         <span class="text">随机播放全部</span>
     </div>

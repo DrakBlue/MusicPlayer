@@ -1,12 +1,12 @@
 <template>
+<div>
   <transition name="slide">
     <better-scroll ref="refresh" class="recommend">
       <div>
-        <div class="line" ref="Line"></div>
         <div class="slider">
           <swiper :options="swiperOption" class="slider-package">
             <swiper-slide v-for="item in slider" :key="item.id" class="slide-item">
-              <a href="http://www.baidu.com">
+              <a :href="item.linkUrl">
               <img :src="item.picUrl" alt class="img-slide">
               </a>
               
@@ -20,18 +20,18 @@
           <div  v-for="(page,index) in pages" class="page" :key="index">
             <div v-for="item in page" :key="item.dissid">
               <div class="item-page">
-                <div class="page-imag">
+                <div class="page-imag" @click="Jump(item)">
                   <img @load="refresh" v-lazy="item.imgurl" style="width:10rem;height:10rem;">
                   <div class="icon">
                     <div class="singer-num">
-                      <i class="iconfont icon-icon-test"></i>
+                      <svg class="icon-svg iconfont" aria-hidden="true"><use xlink:href="#icon-icon-test-copy-copy"></use></svg>
                       <span class="test-num">{{(item.listennum/10000).toFixed(1)}}万</span>
                     </div>
                     <i class="iconfont icon-shuangsechangyongtubiao-"></i>
                   </div>
                 </div>
                 <div class="item-des">
-                  <i class="iconfont icon-yaowan1"></i>
+                  <svg class="icon-svg yaowan" aria-hidden="true"><use xlink:href="#icon-yaowan1"></use></svg>
                   <div v-text="item.dissname" class="des"></div>
                 </div>
               </div>
@@ -40,23 +40,28 @@
         </div>
       </div>
     </better-scroll>
+   
   </transition>
+  <keep-alive>
+        <router-view></router-view>
+  </keep-alive>
+  </div>
 </template>
 
 <script>
-import { getRcommendSlide, getDiscList } from "api/getRecommendSlide";
-// import { getDiscList } from "api/getRecommendContainer.js";
+import { getRcommendSlide, getDiscList } from "api/getRecommend.js";
 import { OK } from "api/config";
 import BScroll from "better-scroll";
 import axios from "axios";
 import BetterScroll from "../common/scroll";
 import LoadComponent from "../common/load";
 import { mapMutations } from 'vuex';
-// import routeName from '@/common/js/dom.js'
+import {playlistMixin} from '@/common/js/mixin.js'
 const routeName = ['/recommend','/singer','/rank','/search']
 let  index = 0
 
 export default {
+  mixins: [playlistMixin],
   name: "Recommend",
   data: function() {
     return {
@@ -83,8 +88,20 @@ export default {
     LoadComponent
   },
   methods: {
+    Jump(item){
+      this.$router.push({
+          path:`/recommend/${item.dissid}`
+      })
+      this.setdisc(item)
+    },
+    handlePlaylist (playlist){
+        const Bottom = playlist.length > 0 ? '70px' : ''
+        this.$refs.refresh.$el.style.bottom = Bottom
+        this.$refs.refresh.refresh()
+    },
     ...mapMutations({
-      setRouteName:'SET_ROUTE_NAME'
+      setdisc:'SET_DISC',
+      setsinger:'SET_SINGER'
     }),
     _getrecommend() {
       getRcommendSlide().then(res => {
@@ -115,29 +132,18 @@ export default {
         this.refreshJudge = true;
       }
     },
-    touchStart (e){
-      this.startX = e.touches[0].clientX
-    },
-    touchMove(e){
-        let x = e.touches[0].clientX
-        let X =  this.startX - x
-        if(X>100){
-          this.$router.push(routeName[1])
-
-        }
-    },
+   
 
   },
   mounted() {
     
   },
   updated(){
-    this.$refs.rocommedHot.addEventListener('touchstart',this.touchStart)
-    this.$refs.rocommedHot.addEventListener('touchmove',this.touchMove)    
+    
     
   },
   activated (){
-    this.setRouteName('/recommend')
+   
   },
   computed: {
     pages() {
@@ -174,19 +180,12 @@ export default {
   margin-top: 7rem;
   overflow: hidden;
 
-  .line {
-    width: 100%;
-    margin-top: 1rem;
-    border-bottom: 0.1rem solid $color-them-icon;
-    color: $color-text-lll;
-  }
-
   .slider {
     height: 0;
     overflow: hidden;
     padding-bottom: 40%;
     position: relative;
-
+    &>>>
     &>>>.swiper-pagination-bullet {
       background-color: $color-text-lll;
     }
@@ -219,7 +218,9 @@ export default {
 
   .page {
     display: flex;
-    justify-content: space-around;
+    width 90%
+    margin 0 auto
+    justify-content space-between
 
     .item-page {
       display: flex;
@@ -255,11 +256,13 @@ export default {
         overflow: hidden;
         word-wrap: break-word;
 
-        
+        .yaowan {
+            position absolute
+          }
 
         .des {
           display: inline-block;
-          text-indent: 1rem;
+          text-indent: 1.5rem;
           line-height: 1.5rem;
         }
       }

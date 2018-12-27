@@ -1,11 +1,10 @@
 <template>
     <div class="sty">
-            <svg class="icon logo" aria-hidden="true">  
-                    <use xlink:href="#icon--" class="yaowan"></use>  
-            </svg> 
+        <svg class="icon-svg" aria-hidden="true"><use xlink:href="#icon--"></use></svg>
         <div class="title">
-           药丸音乐
+           PillMusic
         </div>
+        <router-link to='/person' tag='div' class="person"><i  class="iconfont icon-geshousad"></i></router-link>
     </div>
  </template>
 
@@ -23,18 +22,19 @@ export default {
             display flex
             justify-content center
             align-items center
-            padding 1rem 0
-            .logo
-               width 2rem 
-               height 2rem
-               padding 0 .2rem
+            line-height 4.5rem
             .title
                 letter-spacing .2rem
                 color $color-them-icon
-              
-              
+            .person
+                position absolute
+                right 5%
+                text-align right
+                &>.iconfont
+                    font-size 2.5rem
+                    color $color-them-icon
                   
-                    
+                     
                     
 
 
