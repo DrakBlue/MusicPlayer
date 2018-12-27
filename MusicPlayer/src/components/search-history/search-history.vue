@@ -42,7 +42,6 @@ export default {
             this.$emit('clear')
         },
         pushQuestionToSearchBox (item){
-            console.log(item)
             this.$emit('push',item)
         },
         refresh(){

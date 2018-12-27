@@ -1,5 +1,4 @@
 import storage from 'good-storage'
-import { SET_SEARCH_HISTORY } from '../../store/mutation-types';
 
 const SEARCH_KEY = '__search__'
 const SEARCH_KEY_LENGTH = 15

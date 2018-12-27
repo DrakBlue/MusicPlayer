@@ -83,7 +83,6 @@ export default {
                 })
         },
         playMusic (item,index,songs=this.SongList){
-            console.log(item)
             if(!this.screen_size){
                     this.selectMusic({
                     list:songs,

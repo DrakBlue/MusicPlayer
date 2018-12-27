@@ -11,21 +11,6 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/api/getDiscList': {
-        target: 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg',
-        bypass: function (req, res, proxyOptions) {
-          // console.log("原路径：" + req.originalUrl, "代理路径：" + req.path)
-          req.headers.referer = 'https://c.y.qq.com';
-          req.headers.host = 'c.y.qq.com';
-        },
-        pathRewrite: {
-          '^/api/getDiscList': ''
-        }
-      },
-     
-
-
-      
     },
 
     // Various Dev Server settings
@@ -62,7 +47,7 @@ module.exports = {
   build: {
     // Template for index.html
     index: path.resolve(__dirname, '../dist/index.html'),
-
+    port:9000,
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',

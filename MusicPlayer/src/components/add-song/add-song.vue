@@ -165,7 +165,11 @@ export default {
     },
     ...mapActions(["RemovePlayHistoryOne", "insertSong", "ClearPlayHistory"]),
     confirmShow() {
-      this.$refs.confirm.show();
+      if(this.screenState&&this.playHistory.length){
+        this.$refs.confirm.show()
+      }else if(!this.screenState&&this.search_history){
+        this.$refs.confirm.show()
+      }
     },
     hiddenTip (){
       this.$refs.topTip.hidden()

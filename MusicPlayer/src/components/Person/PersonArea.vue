@@ -119,7 +119,6 @@ export default {
                 })
         },
         playMusic(item,index){
-            console.log(item)
             let song = item
             if (!this.screen_size) {
                 this.insertSong({

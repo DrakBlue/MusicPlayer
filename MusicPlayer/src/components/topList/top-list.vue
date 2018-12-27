@@ -62,7 +62,6 @@ export default {
                             let songlist = res.songlist
                             processSongsUrl(this._normalizeSongs(songlist)).then((songs) => {
                                 this.SongList = songs
-                                console.log(this.SongList)
                             })
                         }
                     })

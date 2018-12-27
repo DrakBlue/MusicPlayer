@@ -1,5 +1,5 @@
 <template>
-    <div class="nav" @click="RouteNameChange">
+    <div class="nav">
       <router-link ref="recommend"   tag="div" to="/recommend" class="nav-item">推荐</router-link>
       <router-link ref='singer'  tag="div" to="/singer" class="nav-item">歌手</router-link>
       <router-link ref='rank'   tag="div" to="/rank" class="nav-item">排行</router-link>
@@ -11,17 +11,16 @@
 <script>
 
 
-import { mapGetters, mapMutations } from 'vuex'
+
 export default {
         computed:{
-            ...mapGetters([
-                'routeName'
-            ])
+            routername(){
+                return this.$route.name
+            }
         },
         watch:{
-            routeName (newVal){
+            routername (newVal){
                 this.BootomLineMove (newVal)
-                
             }
         },
         name:'HomeHead',
@@ -45,25 +44,15 @@ export default {
                         this.$refs.BootomLine.style.left = left4 + 'px';
                         break;
                 }
-            },
-            RouteNameChange(){
-                this.setRouteName(this.$route.name)
-            },
-            ...mapMutations({
-                setRouteName:'SET_ROUTE_NAME'
-            })
+            }
+        
         },
         mounted(){
-            window.addEventListener('beforeunload', this.BootomLineMove(this.$route.name))
+            // window.addEventListener('beforeunload', this.BootomLineMove(this.$route.name))
         },
         destroyed (){
-            window.removeEventListener('beforeunload', this.BootomLineMove(this.$route.name))
+            // window.removeEventListener('beforeunload', this.BootomLineMove(this.$route.name))
         },
-        created (){
-        },
-        activated (){
-
-        }
 }
 </script>
 
