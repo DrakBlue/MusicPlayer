@@ -9,7 +9,7 @@ import { getUid } from '@/common/js/uid'
 const debug = process.env.NODE_ENV !== 'production'
 
 export function getLyric(mid) {
-    const url = debug ? '/api/lyric' : 'http://ustbhuangyi.com/music/api/lyric'
+    const url = debug ? '/api/lyric' : 'http://120.79.214.80/music/api/lyric'
 
   
     const data = Object.assign({}, commonConfig, {
@@ -30,7 +30,7 @@ export function getLyric(mid) {
   }
 
 export function getSongsUrl(songs) {
-    const url = debug ? '/api/getPurlUrl' : 'http://ustbhuangyi.com/music/api/getPurlUrl'
+    const url = debug ? '/api/getPurlUrl' : 'http://120.79.214.80/music/api/getPurlUrl'
   
     let mids = []
     let types = []

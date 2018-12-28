@@ -1,9 +1,5 @@
-export const routeName= state => state.routeName
-
 export const singer = state => state.singer
 export const Play_Radom = state => state.Play_Radom
-
-
 export const screen_size = state => state.screen_size
 export const play_list = state => state.play_list
 export const sequence_list = state => state.sequence_list

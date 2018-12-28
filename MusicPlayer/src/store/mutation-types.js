@@ -1,5 +1,4 @@
 export const SET_DISC = "SET_DISC"
-export const SET_ROUTE_NAME = "SET_ROUTE_NAME" 
 export const SET_SINGER = "SET_SINGER"
 export const SET_PLAYRADOM = 'SET_PLAYRADOM'
 export const SET_SCREEN_SIZE = 'SET_SCREEN_SIZE'

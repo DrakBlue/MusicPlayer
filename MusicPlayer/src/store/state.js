@@ -7,7 +7,6 @@ const playModeName={listPlay:0,radomPlay:1,singerPlay:2}
 const state = {
     disc:{},
     topList:'',
-    routeName:'',
     singer:{},
     minPlayState:true,
     Play_Radom:false,
